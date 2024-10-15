@@ -9,7 +9,7 @@ The log is rotated among a specified number of files with the specified sizes.
 
 Unlike other logging solutions, this one closes and flushes the log file with each write. This is obviously less efficient but it makes it possible to write to the same log file from different sources (eg. both from the Dart side and your underlying platform code).
 
-The module has a call to pack the current log files into a ZIP archive and send it attached to an e-mail address. It's main intended use case is to support an _Ask for help_ item in the _Settings_ page of an app that attaches the log to a support request sent by the user.
+The module has a call to pack the current log files into a ZIP archive and send it attached to an e-mail address. Its main intended use case is to support an _Ask for help_ item in the _Settings_ page of an app that attaches the log to a support request sent by the user.
 
 ## Usage
 
@@ -18,7 +18,6 @@ Call the constructor from your `main()` function:
 ```dart
 void main() async {
   SendLogger(
-
     /// This name will appear as sender in the log lines, making it easier to spot them in Logcat.
     'YourAppName',
     /// The number of rotated log files kept. Defaults to 3.
