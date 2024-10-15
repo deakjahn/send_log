@@ -1,6 +1,7 @@
 name: send_log
 description: Log support with e-mail sending.
 version: 1.0.1
+homepage: https://github.com/deakjahn/send_log
 
 environment:
   sdk: ">=2.17.0 <4.0.0"
