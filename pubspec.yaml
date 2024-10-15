@@ -1,0 +1,33 @@
+name: send_log
+description: Log support with e-mail sending.
+version: 1.0.0
+publish_to: "none"
+
+environment:
+  sdk: ">=2.17.0 <4.0.0"
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  clock: ^1.1.1
+  flutter_archive: ^6.0.3
+  logging: ^1.2.0
+  logging_appenders: ^1.3.1
+  path: ^1.8.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: hu.co.tramontana.sendlog
+        pluginClass: SendLogPlugin
+      ios:
+        pluginClass: SendLogPlugin
