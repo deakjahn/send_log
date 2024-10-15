@@ -1,7 +1,6 @@
 name: send_log
 description: Log support with e-mail sending.
 version: 1.0.0
-publish_to: "none"
 
 environment:
   sdk: ">=2.17.0 <4.0.0"
