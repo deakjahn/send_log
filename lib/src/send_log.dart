@@ -21,6 +21,7 @@ class SendLogger {
   final int keepRotateCount;
   final int rotateAtSizeBytes;
   final Duration rotateCheckInterval;
+  final String logFilename;
   final bool logFileInDebugMode;
 
   SendLogger(
@@ -28,6 +29,7 @@ class SendLogger {
     this.keepRotateCount = 3,
     this.rotateAtSizeBytes = 10 * 1024 * 1024,
     this.rotateCheckInterval = const Duration(minutes: 5),
+    this.logFilename = 'log.txt',
     this.logFileInDebugMode = false,
   }) {
     _logger = Logger(appTitle);
@@ -39,7 +41,7 @@ class SendLogger {
     WidgetsFlutterBinding.ensureInitialized();
     if (kReleaseMode || kProfileMode || logFileInDebugMode) {
       Logger.root.level = Level.CONFIG;
-      final path = await getLogPath('log.txt');
+      final path = await getLogPath(logFilename);
       SendLogRotatingFileAppender(
         baseFilePath: path,
         keepRotateCount: keepRotateCount,

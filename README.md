@@ -1,15 +1,18 @@
 Send Log
 ========
 
-A straightforward logging solution.
+Straightforward and simple log support with e-mail sending. The intended use case is easy collection of log data, allowing the user to send it to a support address when asking for help.
 
-Log is sent to the console in debug mode (using ANSI color codes), to a file in release mode. It can be configured to use the log file in debug mode, too.
+Log lines are written:
 
-The log is rotated among a specified number of files with the specified sizes.
+* debug mode: Flutter (colored lines) and Logcat console,
+* release/profile mode: log file (can be selected in debug mode, too).
 
-Unlike other logging solutions, this one closes and flushes the log file with each write. This is obviously less efficient but it makes it possible to write to the same log file from different sources (eg. both from the Dart side and your underlying platform code).
+The log is rotated among a specified number of files when the specified maximum size is reached.
 
-The module has a call to pack the current log files into a ZIP archive and send it attached to an e-mail address. Its main intended use case is to support an _Ask for help_ item in the _Settings_ page of an app that attaches the log to a support request sent by the user.
+Unlike other logging solutions, this one closes and flushes the log file after each write. While this is obviously less efficient, it makes it possible to write to the same log file from different locations (eg. both from the Dart side and your underlying platform code).
+
+The module supports packing the current log files into a ZIP archive and send it attached to an e-mail address. Its main intended use case is to support an _Ask for help_ item in the _Settings_ page of an app that attaches the log to a support request sent by the user.
 
 ## Usage
 
@@ -18,7 +21,8 @@ Call the constructor from your `main()` function:
 ```dart
 void main() async {
   SendLogger(
-    /// This name will appear as sender in the log lines, making it easier to spot them in Logcat.
+
+    /// This name will appear as sender in the log lines, making it easier to spot them or filter on in Logcat.
     'YourAppName',
     /// The number of rotated log files kept. Defaults to 3.
     keepRotateCount: 5,
@@ -26,6 +30,9 @@ void main() async {
     rotateAtSizeBytes: 50 * 1024 * 1024,
     /// The frequency of rotation checks. Defaults to 5 minutes.
     rotateCheckInterval: const Duration(minutes: 10),
+
+    /// The base filename. Defaults to 'log.txt'.
+    logFilename: 'sendlog.txt',
     /// Whether to send debug logs to console (false) or file (true). Defaults to false.
     /// Release and profile modes always send to file.
     logFileInDebugMode: true,
@@ -47,7 +54,7 @@ logError(String prefix, Object? message, [Object? error, StackTrace? stackTrace]
 * The `message` itself can be either a string or any object that has a `toString()` function.
 * The `error` itself (practically an `Exception` or an `Error`) and the `stackTrace` will be suppressed in release mode and printed otherwise.
 
-A convenience function helps to print a formatted hex dump. It requires an integer list (which could be an `Uint8List`):
+A convenience function helps print a formatted hex dump. It requires an integer list (which could be an `Uint8List`):
 
 ```dart
 logHexDump(String prefix, Object? message, List<int> data, {int rowSize = 16, bool showAscii = true});
@@ -69,4 +76,4 @@ which will call the e-mail app of the user's choice with the subject "Log (YourA
 
 ## Status
 
-The plugin is in current use in several actively published Android apps and users regularly and successfully send support requests with it. It isn't tested on iOS thoroughly, although the code is supposedly present. Tests and reports, as well as possible PRs on iOS and other platforms are, of course, welcome.
+The plugin is in current use in several published Android apps and users regularly and successfully send support requests with it. It isn't tested on iOS thoroughly, although the code is supposedly present. Tests and reports, as well as possible PRs on iOS and other platforms are welcome.
