@@ -14,7 +14,7 @@ Unlike other logging solutions, this one closes and flushes the log file after e
 
 The module supports packing the current log files into a ZIP archive and send it attached to an e-mail address. Its main intended use case is to support an _Ask for help_ item in the _Settings_ page of an app that attaches the log to a support request sent by the user.
 
-## Usage
+## Logging from Dart code
 
 Call the constructor from your `main()` function:
 
@@ -30,9 +30,6 @@ void main() async {
     rotateAtSizeBytes: 50 * 1024 * 1024,
     /// The frequency of rotation checks. Defaults to 5 minutes.
     rotateCheckInterval: const Duration(minutes: 10),
-
-    /// The base filename. Defaults to 'log.txt'.
-    logFilename: 'sendlog.txt',
     /// Whether to send debug logs to console (false) or file (true). Defaults to false.
     /// Release and profile modes always send to file.
     logFileInDebugMode: true,
@@ -51,8 +48,8 @@ logError(String prefix, Object? message, [Object? error, StackTrace? stackTrace]
 ```
 
 * The `prefix` will be prepended to the message.
-* The `message` itself can be either a string or any object that has a `toString()` function.
-* The `error` itself (practically an `Exception` or an `Error`) and the `stackTrace` will be suppressed in release mode and printed otherwise.
+* The `message` can be either a string or any object that has a `toString()` function.
+* The `error` (practically an `Exception` or an `Error`) and the `stackTrace` will be suppressed in release mode and printed otherwise.
 
 A convenience function helps print a formatted hex dump. It requires an integer list (which could be an `Uint8List`):
 
@@ -65,6 +62,31 @@ The required log level can be changed at any time using the usual `Level` values
 ```dart
 setLogLevel(Level.FINE);
 ```
+
+## Logging from platform code
+
+In order to log from you platform code, make sure you call `init()` first with a context. A usual place to call from could be the `onCreate()` function of an activity.
+
+```kotlin
+import hu.co.tramontana.sendlog.*
+
+override fun onCreate(savedInstanceState: Bundle?) {
+  Log.init(this)
+  super.onCreate(savedInstanceState)
+}
+```
+
+From that point onwards, you can use the equivalent log functions:
+
+```kotlin
+Log.info(prefix: String, message: Any?)
+Log.debug(prefix: String, message: Any?)
+Log.warning(prefix: String, message: Any?)
+Log.error(prefix: String, message: Any?)
+Log.hexDump(prefix: String, message: Any?, data: IntArray, rowSize: Int = 16, showAscii: Boolean = true)
+```
+
+## Sending the logs
 
 Sending the logs can be initiated with:
 

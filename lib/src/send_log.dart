@@ -21,7 +21,6 @@ class SendLogger {
   final int keepRotateCount;
   final int rotateAtSizeBytes;
   final Duration rotateCheckInterval;
-  final String logFilename;
   final bool logFileInDebugMode;
 
   SendLogger(
@@ -29,7 +28,6 @@ class SendLogger {
     this.keepRotateCount = 3,
     this.rotateAtSizeBytes = 10 * 1024 * 1024,
     this.rotateCheckInterval = const Duration(minutes: 5),
-    this.logFilename = 'log.txt',
     this.logFileInDebugMode = false,
   }) {
     _logger = Logger(appTitle);
@@ -41,7 +39,12 @@ class SendLogger {
     WidgetsFlutterBinding.ensureInitialized();
     if (kReleaseMode || kProfileMode || logFileInDebugMode) {
       Logger.root.level = Level.CONFIG;
-      final path = await getLogPath(logFilename);
+      final path = await getLogPath('log.txt');
+      await initialize(
+        appTitle: appTitle,
+        level: Level.CONFIG,
+        useLogFile: true,
+      );
       SendLogRotatingFileAppender(
         baseFilePath: path,
         keepRotateCount: keepRotateCount,
@@ -51,13 +54,34 @@ class SendLogger {
     } else {
       Logger.root.level = Level.ALL;
       // recordStackTraceAtLevel = Level.SEVERE;
+      await initialize(
+        appTitle: appTitle,
+        level: Level.ALL,
+        useLogFile: false,
+      );
       PrintAppender(formatter: const _SendLogColorFormatter()).attachToLogger(Logger.root);
     }
+  }
+
+  static Future<bool> initialize({required String appTitle, required Level level, bool useLogFile = false}) async {
+    final result = await _channel.invokeMethod<bool>('initialize', {
+      'app_title': appTitle,
+      'level': level.value,
+      'use_log_file': useLogFile,
+    });
+    return result!;
   }
 
   static Future<String> getLogPath([String filename = '']) async {
     final result = await _channel.invokeMethod<String>('getLogPath', {
       'filename': filename,
+    });
+    return result!;
+  }
+
+  static Future<bool> setLevel(Level level) async {
+    final result = await _channel.invokeMethod<bool>('setLevel', {
+      'level': level.value,
     });
     return result!;
   }
@@ -111,7 +135,10 @@ class SendLogger {
   }
 }
 
-void setLogLevel(Level level) => _logger.level = level;
+Future<bool> setLogLevel(Level level) async {
+  _logger.level = level;
+  return await SendLogger.setLevel(level);
+}
 
 void logInfo(String prefix, Object? message, [Object? error, StackTrace? stackTrace]) => _logger.finest(
       '$prefix: $message',
@@ -177,6 +204,7 @@ String logHexDump(String prefix, Object? message, List<int> data, {int rowSize =
 class _SendLogColorFormatter extends LogRecordFormatter {
   final LogRecordFormatter wrappedFormatter;
 
+  // ignore: unused_element
   const _SendLogColorFormatter([this.wrappedFormatter = const DefaultLogRecordFormatter()]);
 
   @override

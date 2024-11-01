@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.0] - 2024-11-01
+
+* Platform side.
+
 ## [1.0.1] - 2024-10-16
 
 * README typos.

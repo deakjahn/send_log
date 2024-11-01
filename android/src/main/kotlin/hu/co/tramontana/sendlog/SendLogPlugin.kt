@@ -62,14 +62,26 @@ class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginReg
 
   override fun onMethodCall(call: MethodCall, result: Result) {
     when (call.method) {
+      "initialize" -> {
+        Log.TAG = call.argument<String>("app_title")!!
+        Log.level = call.argument<Int>("level")!!
+        Log.useLogFile = call.argument<Boolean>("use_log_file")!!
+        result.success(true)
+      }
+
       "getLogPath" -> {
-        val filename: String = call.argument<String>("filename")!!
+        Log.filename = call.argument<String>("filename")!!
         var path = java.io.File(context.filesDir, "logs").apply {
           mkdirs()
         }
-        if (filename.isNotEmpty())
-          path = path.resolve(filename)
+        if (Log.filename.isNotEmpty())
+          path = path.resolve(Log.filename)
         result.success(path.absolutePath)
+      }
+
+      "setLevel" -> {
+        Log.level = call.argument<Int>("level")!!
+        result.success(true)
       }
 
       "sendMail" -> {

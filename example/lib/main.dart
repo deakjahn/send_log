@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:send_log/send_log.dart';
 
 void main() {
-  SendLogger(MyApp.APP_TITLE);
+  SendLogger(
+    MyApp.APP_TITLE,
+    // logFileInDebugMode: true,
+  );
   runApp(const MyApp());
 }
 
@@ -38,10 +41,13 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    logDebug('test', 'initState');
-    logInfo('test', 'initState');
-    logWarning('test', 'initState');
-    logError('test', 'initState');
+
+    Future.delayed(Duration(seconds: 3)).then((_) {
+      logDebug('test', 'initState');
+      logInfo('test', 'initState');
+      logWarning('test', 'initState');
+      logError('test', 'initState');
+    });
   }
 
   Future<void> send() async {
