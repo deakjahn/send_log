@@ -21,7 +21,6 @@ Call the constructor from your `main()` function:
 ```dart
 void main() async {
   SendLogger(
-
     /// This name will appear as sender in the log lines, making it easier to spot them or filter on in Logcat.
     'YourAppName',
     /// The number of rotated log files kept. Defaults to 3.
@@ -79,12 +78,16 @@ override fun onCreate(savedInstanceState: Bundle?) {
 From that point onwards, you can use the equivalent log functions:
 
 ```kotlin
-Log.info(prefix: String, message: Any?)
-Log.debug(prefix: String, message: Any?)
-Log.warning(prefix: String, message: Any?)
-Log.error(prefix: String, message: Any?)
+Log.info(prefix: String, message: Any?, error: Throwable? = null)
+Log.debug(prefix: String, message: Any?, error: Throwable? = null)
+Log.warning(prefix: String, message: Any?, error: Throwable? = null)
+Log.error(prefix: String, message: Any?, error: Throwable? = null)
 Log.hexDump(prefix: String, message: Any?, data: IntArray, rowSize: Int = 16, showAscii: Boolean = true)
 ```
+
+* The `prefix` will be prepended to the message.
+* The `message` can be either a string or any object that has a `toString()` function.
+* The `error` will be suppressed in release mode and printed otherwise.
 
 ## Sending the logs
 

@@ -66,6 +66,7 @@ class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginReg
         Log.TAG = call.argument<String>("app_title")!!
         Log.level = call.argument<Int>("level")!!
         Log.useLogFile = call.argument<Boolean>("use_log_file")!!
+        Log.releaseMode = call.argument<Boolean>("release_mode")!!
         result.success(true)
       }
 

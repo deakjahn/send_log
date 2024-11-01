@@ -14,6 +14,7 @@ object Log {
   public var filename = "log.txt"
   public var level = 0
   public var useLogFile = false
+  public var releaseMode = true
   private lateinit var logFile: File
 
   enum class Level(val value: Int) {
@@ -39,42 +40,62 @@ object Log {
   private fun timestamp(): String = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSS", Locale.getDefault()).format(Calendar.getInstance().time)
 
   @JvmStatic
-  fun info(prefix: String, message: Any?) {
+  fun info(prefix: String, message: Any?, error: Throwable? = null) {
     if (Level.FINEST.value > level) {
-      if (useLogFile)
-        logFile.appendText("${timestamp()} FINEST $TAG - $prefix: $message\n")
-      else
-        android.util.Log.i(TAG, "\u001B[32m$prefix: $message\u001B[0m")
+      if (useLogFile) {
+        val details = if (!Log.releaseMode && error != null) error.stackTraceToString() else ""
+        logFile.appendText("${timestamp()} FINEST $TAG - $prefix: $message\n$details")
+      } else
+        android.util.Log.i(
+          TAG,
+          "\u001B[32m$prefix: $message\u001B[0m",
+          if (!releaseMode) error else null
+        )
     }
   }
 
   @JvmStatic
-  fun debug(prefix: String, message: Any?) {
+  fun debug(prefix: String, message: Any?, error: Throwable? = null) {
     if (Level.FINE.value > level) {
-      if (useLogFile)
-        logFile.appendText("${timestamp()} FINE $TAG - $prefix: $message\n")
-      else
-        android.util.Log.d(TAG, "\u001B[34m$prefix: $message\u001B[0m")
+      if (useLogFile) {
+        val details = if (!Log.releaseMode && error != null) error.stackTraceToString() else ""
+        logFile.appendText("${timestamp()} FINE $TAG - $prefix: $message\n$details")
+      } else
+        android.util.Log.d(
+          TAG,
+          "\u001B[34m$prefix: $message\u001B[0m",
+          if (!releaseMode) error else null
+        )
     }
   }
 
   @JvmStatic
-  fun warning(prefix: String, message: Any?) {
+  fun warning(prefix: String, message: Any?, error: Throwable? = null) {
     if (Level.WARNING.value > level) {
-      if (useLogFile)
-        logFile.appendText("${timestamp()} WARNING $TAG - $prefix: $message\n")
-      else
-        android.util.Log.w(TAG, "\u001B[35m$prefix: $message\u001B[0m")
+      if (useLogFile) {
+        val details = if (!Log.releaseMode && error != null) error.stackTraceToString() else ""
+        logFile.appendText("${timestamp()} WARNING $TAG - $prefix: $message\n$details")
+      } else
+        android.util.Log.w(
+          TAG,
+          "\u001B[35m$prefix: $message\u001B[0m",
+          if (!releaseMode) error else null
+        )
     }
   }
 
   @JvmStatic
-  fun error(prefix: String, message: Any?) {
+  fun error(prefix: String, message: Any?, error: Throwable? = null) {
     if (Level.SEVERE.value > level) {
-      if (useLogFile)
-        logFile.appendText("${timestamp()} SEVERE $TAG - $prefix: $message\n")
-      else
-        android.util.Log.e(TAG, "\u001B[31m$prefix: $message\u001B[0m")
+      if (useLogFile) {
+        val details = if (!Log.releaseMode && error != null) error.stackTraceToString() else ""
+        logFile.appendText("${timestamp()} SEVERE $TAG - $prefix: $message\n$details")
+      } else
+        android.util.Log.e(
+          TAG,
+          "\u001B[31m$prefix: $message\u001B[0m",
+          if (!releaseMode) error else null
+        )
     }
   }
 

@@ -44,6 +44,7 @@ class SendLogger {
         appTitle: appTitle,
         level: Level.CONFIG,
         useLogFile: true,
+        releaseMode: kReleaseMode,
       );
       SendLogRotatingFileAppender(
         baseFilePath: path,
@@ -53,21 +54,22 @@ class SendLogger {
       ).attachToLogger(Logger.root);
     } else {
       Logger.root.level = Level.ALL;
-      // recordStackTraceAtLevel = Level.SEVERE;
       await initialize(
         appTitle: appTitle,
         level: Level.ALL,
         useLogFile: false,
+        releaseMode: kReleaseMode,
       );
       PrintAppender(formatter: const _SendLogColorFormatter()).attachToLogger(Logger.root);
     }
   }
 
-  static Future<bool> initialize({required String appTitle, required Level level, bool useLogFile = false}) async {
+  static Future<bool> initialize({required String appTitle, required Level level, bool useLogFile = false, bool releaseMode = true}) async {
     final result = await _channel.invokeMethod<bool>('initialize', {
       'app_title': appTitle,
       'level': level.value,
       'use_log_file': useLogFile,
+      'release_mode': releaseMode,
     });
     return result!;
   }
