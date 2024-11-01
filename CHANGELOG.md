@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.1] - 2024-11-01
+
+* ANSI colors.
+
 ## [1.1.0] - 2024-11-01
 
 * Platform side.

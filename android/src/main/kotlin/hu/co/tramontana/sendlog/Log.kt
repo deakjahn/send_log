@@ -44,7 +44,7 @@ object Log {
       if (useLogFile)
         logFile.appendText("${timestamp()} FINEST $TAG - $prefix: $message\n")
       else
-        android.util.Log.i(TAG, "$prefix: $message")
+        android.util.Log.i(TAG, "\u001B[32m$prefix: $message\u001B[0m")
     }
   }
 
@@ -54,7 +54,7 @@ object Log {
       if (useLogFile)
         logFile.appendText("${timestamp()} FINE $TAG - $prefix: $message\n")
       else
-        android.util.Log.d(TAG, "$prefix: $message")
+        android.util.Log.d(TAG, "\u001B[34m$prefix: $message\u001B[0m")
     }
   }
 
@@ -64,7 +64,7 @@ object Log {
       if (useLogFile)
         logFile.appendText("${timestamp()} WARNING $TAG - $prefix: $message\n")
       else
-        android.util.Log.w(TAG, "$prefix: $message")
+        android.util.Log.w(TAG, "\u001B[35m$prefix: $message\u001B[0m")
     }
   }
 
@@ -74,7 +74,7 @@ object Log {
       if (useLogFile)
         logFile.appendText("${timestamp()} SEVERE $TAG - $prefix: $message\n")
       else
-        android.util.Log.e(TAG, "$prefix: $message")
+        android.util.Log.e(TAG, "\u001B[31m$prefix: $message\u001B[0m")
     }
   }
 

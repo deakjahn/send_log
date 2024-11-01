@@ -65,7 +65,7 @@ setLogLevel(Level.FINE);
 
 ## Logging from platform code
 
-In order to log from you platform code, make sure you call `init()` first with a context. A usual place to call from could be the `onCreate()` function of an activity.
+In order to log from your platform code, make sure you call `init()` first with a context. A usual place to call from could be the `onCreate()` function of an activity.
 
 ```kotlin
 import hu.co.tramontana.sendlog.*
