@@ -31,3 +31,11 @@ flutter:
         pluginClass: SendLogPlugin
       ios:
         pluginClass: SendLogPlugin
+
+funding:
+  - https://buymeacoffee.com/deakjahn
+
+topics:
+  - flutter
+  - logging
+  - e-mail
