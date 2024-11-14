@@ -19,19 +19,11 @@ import androidx.core.content.FileProvider
 import androidx.core.text.HtmlCompat
 import java.io.File
 
-private const val SUBJECT = "subject"
-private const val BODY = "body"
-private const val RECIPIENTS = "recipients"
-private const val CC = "cc"
-private const val BCC = "bcc"
-private const val ATTACHMENT_PATHS = "attachment_paths"
-private const val IS_HTML = "is_html"
-private const val REQUEST_CODE_SEND = 607
-
 class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegistry.ActivityResultListener {
   private lateinit var context: Context
   private var activity: Activity? = null
   private var channelResult: Result? = null
+  private val REQUEST_CODE_SEND = 119025
 
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     val channel = MethodChannel(flutterPluginBinding.flutterEngine.dartExecutor, "hu.co.tramontana.sendlog/platform")
@@ -98,13 +90,13 @@ class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginReg
   }
 
   private fun sendEmail(options: MethodCall, callback: Result) {
-    val body = options.argument<String>(BODY)
-    val isHtml = options.argument<Boolean>(IS_HTML) ?: false
-    val attachmentPaths = options.argument<ArrayList<String>>(ATTACHMENT_PATHS) ?: ArrayList()
-    val subject = options.argument<String>(SUBJECT)
-    val recipients = options.argument<ArrayList<String>>(RECIPIENTS)
-    val cc = options.argument<ArrayList<String>>(CC)
-    val bcc = options.argument<ArrayList<String>>(BCC)
+    val body = options.argument<String>("body")
+    val attachmentPaths = options.argument<ArrayList<String>>("attachment_paths") ?: ArrayList()
+    val subject = options.argument<String>("subject")
+    val recipients = options.argument<ArrayList<String>>("recipients")
+    val cc = options.argument<ArrayList<String>>("cc")
+    val bcc = options.argument<ArrayList<String>>("bcc")
+    val isHtml = options.argument<Boolean>("is_html") ?: false
 
     var text: CharSequence? = null
     var html: String? = null
@@ -173,7 +165,7 @@ class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginReg
     if (activity?.packageManager?.resolveActivity(intent, 0) != null)
       activity?.startActivityForResult(intent, REQUEST_CODE_SEND)
     else
-      callback.error("email_error", "No email clients found", null)
+      callback.error("email_error", "No email client found", null)
   }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {

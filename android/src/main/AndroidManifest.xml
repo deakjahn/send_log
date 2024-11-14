@@ -1,8 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="hu.co.tramontana.sendlog">
+
   <application>
     <provider
-      android:name="androidx.core.content.FileProvider"
+      android:name=".SendLogFileProvider"
       android:authorities="${applicationId}.logprovider"
       android:exported="false"
       android:grantUriPermissions="true">
