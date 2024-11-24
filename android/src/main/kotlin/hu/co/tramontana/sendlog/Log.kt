@@ -10,11 +10,11 @@ import kotlin.text.*
 
 @Suppress("unused")
 object Log {
-  public var TAG = "SendLog"
-  public var filename = "log.txt"
-  public var level = 0
-  public var useLogFile = false
-  public var releaseMode = true
+  internal var TAG = "SendLog"
+  internal var filename = "log.txt"
+  internal var level = 0
+  internal var useLogFile = false
+  internal var releaseMode = true
   private lateinit var logFile: File
 
   enum class Level(val value: Int) {
@@ -43,7 +43,7 @@ object Log {
   fun info(prefix: String, message: Any?, error: Throwable? = null) {
     if (Level.FINEST.value > level) {
       if (useLogFile) {
-        val details = if (!Log.releaseMode && error != null) error.stackTraceToString() else ""
+        val details = if (!releaseMode && error != null) error.stackTraceToString() else ""
         logFile.appendText("${timestamp()} FINEST $TAG - $prefix: $message\n$details")
       } else
         android.util.Log.i(
@@ -58,7 +58,7 @@ object Log {
   fun debug(prefix: String, message: Any?, error: Throwable? = null) {
     if (Level.FINE.value > level) {
       if (useLogFile) {
-        val details = if (!Log.releaseMode && error != null) error.stackTraceToString() else ""
+        val details = if (!releaseMode && error != null) error.stackTraceToString() else ""
         logFile.appendText("${timestamp()} FINE $TAG - $prefix: $message\n$details")
       } else
         android.util.Log.d(
@@ -73,7 +73,7 @@ object Log {
   fun warning(prefix: String, message: Any?, error: Throwable? = null) {
     if (Level.WARNING.value > level) {
       if (useLogFile) {
-        val details = if (!Log.releaseMode && error != null) error.stackTraceToString() else ""
+        val details = if (!releaseMode && error != null) error.stackTraceToString() else ""
         logFile.appendText("${timestamp()} WARNING $TAG - $prefix: $message\n$details")
       } else
         android.util.Log.w(
@@ -88,7 +88,7 @@ object Log {
   fun error(prefix: String, message: Any?, error: Throwable? = null) {
     if (Level.SEVERE.value > level) {
       if (useLogFile) {
-        val details = if (!Log.releaseMode && error != null) error.stackTraceToString() else ""
+        val details = if (!releaseMode && error != null) error.stackTraceToString() else ""
         logFile.appendText("${timestamp()} SEVERE $TAG - $prefix: $message\n$details")
       } else
         android.util.Log.e(

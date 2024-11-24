@@ -23,7 +23,6 @@ class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginReg
   private lateinit var context: Context
   private var activity: Activity? = null
   private var channelResult: Result? = null
-  private val REQUEST_CODE_SEND = 119025
 
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     val channel = MethodChannel(flutterPluginBinding.flutterEngine.dartExecutor, "hu.co.tramontana.sendlog/platform")
@@ -161,14 +160,14 @@ class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginReg
     }
 
     if (activity?.packageManager?.resolveActivity(intent, 0) != null)
-      activity?.startActivityForResult(intent, REQUEST_CODE_SEND)
+      activity?.startActivityForResult(intent, R.id.request_send_log and 0xFFFF)
     else
       callback.error("email_error", "No email client found", null)
   }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
     return when (requestCode) {
-      REQUEST_CODE_SEND -> {
+      R.id.request_send_log and 0xFFFF -> {
         channelResult?.success(true)
         channelResult = null
         true
