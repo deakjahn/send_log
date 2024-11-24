@@ -1,5 +1,6 @@
 # Changelog
 
+## [1.1.5] - 2024-11-24
 ## [1.1.4] - 2024-11-24
 
 * Changes in handling activity.

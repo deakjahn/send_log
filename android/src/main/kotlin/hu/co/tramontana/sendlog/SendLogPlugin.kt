@@ -19,9 +19,11 @@ import androidx.core.content.FileProvider
 import androidx.core.text.HtmlCompat
 import java.io.File
 
-class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
+class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegistry.ActivityResultListener {
   private lateinit var context: Context
   private var activity: Activity? = null
+  private var channelResult: Result? = null
+  private val REQUEST_CODE_SEND = 119025
 
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     val channel = MethodChannel(flutterPluginBinding.flutterEngine.dartExecutor, "hu.co.tramontana.sendlog/platform")
@@ -34,6 +36,7 @@ class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
   override fun onAttachedToActivity(activityPluginBinding: ActivityPluginBinding) {
     activity = activityPluginBinding.activity
+    activityPluginBinding.addActivityResultListener(this)
   }
 
   override fun onDetachedFromActivityForConfigChanges() {
@@ -42,6 +45,7 @@ class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
   override fun onReattachedToActivityForConfigChanges(activityPluginBinding: ActivityPluginBinding) {
     activity = activityPluginBinding.activity
+    activityPluginBinding.addActivityResultListener(this)
   }
 
   override fun onDetachedFromActivity() {
@@ -74,8 +78,8 @@ class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
       }
 
       "sendMail" -> {
+        this.channelResult = result
         sendEmail(call, result)
-        result.success(true)
       }
 
       else ->
@@ -157,9 +161,24 @@ class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     if (activity?.packageManager?.resolveActivity(intent, 0) != null)
-      activity?.startActivity(intent)
+      activity?.startActivityForResult(intent, REQUEST_CODE_SEND)
     else
       callback.error("email_error", "No email client found", null)
+  }
+
+  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
+    return when (requestCode) {
+      REQUEST_CODE_SEND -> {
+        channelResult?.success(true)
+        channelResult = null
+        true
+      }
+
+      else -> {
+        channelResult = null
+        false
+      }
+    }
   }
 
   private fun listArrayToArray(list: ArrayList<String>): Array<String> = list.toArray(arrayOfNulls<String>(list.size))
