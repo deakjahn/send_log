@@ -4,12 +4,12 @@
   <application>
     <provider
       android:name=".SendLogFileProvider"
-      android:authorities="${applicationId}.logprovider"
+      android:authorities="hu.co.tramontana.sendlog.logprovider"
       android:exported="false"
       android:grantUriPermissions="true">
       <meta-data
         android:name="android.support.FILE_PROVIDER_PATHS"
-        android:resource="@xml/file_paths" />
+        android:resource="@xml/sendlog_paths" />
     </provider>
   </application>
 </manifest>

@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.4] - 2024-11-24
+
+* Changes in handling activity.
+
 ## [1.1.3] - 2024-11-17
 
 * Platform side stacktrace.

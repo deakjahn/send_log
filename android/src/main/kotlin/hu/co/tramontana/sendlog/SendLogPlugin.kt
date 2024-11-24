@@ -19,11 +19,9 @@ import androidx.core.content.FileProvider
 import androidx.core.text.HtmlCompat
 import java.io.File
 
-class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegistry.ActivityResultListener {
+class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
   private lateinit var context: Context
   private var activity: Activity? = null
-  private var channelResult: Result? = null
-  private val REQUEST_CODE_SEND = 119025
 
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     val channel = MethodChannel(flutterPluginBinding.flutterEngine.dartExecutor, "hu.co.tramontana.sendlog/platform")
@@ -36,7 +34,6 @@ class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginReg
 
   override fun onAttachedToActivity(activityPluginBinding: ActivityPluginBinding) {
     activity = activityPluginBinding.activity
-    activityPluginBinding.addActivityResultListener(this)
   }
 
   override fun onDetachedFromActivityForConfigChanges() {
@@ -45,7 +42,6 @@ class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginReg
 
   override fun onReattachedToActivityForConfigChanges(activityPluginBinding: ActivityPluginBinding) {
     activity = activityPluginBinding.activity
-    activityPluginBinding.addActivityResultListener(this)
   }
 
   override fun onDetachedFromActivity() {
@@ -78,10 +74,8 @@ class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginReg
       }
 
       "sendMail" -> {
-        this.channelResult = result
         sendEmail(call, result)
-        // If the call threw an exception, Flutter already sent a result to the channel,
-        // so we don't need to send a result from onActivityResult anymore.
+        result.success(true)
       }
 
       else ->
@@ -105,7 +99,7 @@ class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginReg
       html = if (isHtml) it else null
     }
     val attachmentUris = attachmentPaths.map {
-      FileProvider.getUriForFile(context, activity!!.packageName + ".logprovider", File(it))
+      FileProvider.getUriForFile(context, "hu.co.tramontana.sendlog.logprovider", File(it))
     }
 
     val intent = Intent()
@@ -163,25 +157,9 @@ class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginReg
     }
 
     if (activity?.packageManager?.resolveActivity(intent, 0) != null)
-      activity?.startActivityForResult(intent, REQUEST_CODE_SEND)
+      activity?.startActivity(intent)
     else
       callback.error("email_error", "No email client found", null)
-  }
-
-  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-    return when (requestCode) {
-      REQUEST_CODE_SEND -> {
-        channelResult?.success(true)
-        channelResult = null
-        true
-      }
-
-      else -> {
-        channelResult?.success(false)
-        channelResult = null
-        false
-      }
-    }
   }
 
   private fun listArrayToArray(list: ArrayList<String>): Array<String> = list.toArray(arrayOfNulls<String>(list.size))
