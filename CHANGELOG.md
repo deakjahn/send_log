@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.7] - 2024-11-27
+
+* Provider id.
+
 ## [1.1.6] - 2024-11-24
 
 * Resource-based request id.
