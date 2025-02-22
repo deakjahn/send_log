@@ -101,6 +101,30 @@ await SendLogger.launchEmailLog('YourAppName', 'sendlog@example.com', 'message b
 
 which will call the e-mail app of the user's choice with the subject "Log (YourAppName)", the recipient address and the initial message body filled. The plugin **will not** send the message, this is up to the user to decide. It only starts the e-mail and attaches the zipped log files. However, it will return a logical value that you can use to decide what message to present to your user about success or failure.
 
+## Warning on Android
+
+If you plan to use your own file provider inb your app, you have to make sure the two (yours and the one in `send_log`) don't clash. Add this to your manifest:
+
+```xml
+<provider
+  android:name="hu.co.tramontana.sendlog.SendLogFileProvider"
+  android:authorities="hu.co.tramontana.sendlog.logprovider"
+  android:exported="false"
+  android:grantUriPermissions="true"
+  tools:replace="android:authorities">
+  <meta-data
+    android:name="android.support.FILE_PROVIDER_PATHS"
+    android:resource="@xml/sendlog_paths"
+    tools:replace="android:resource" />
+</provider>
+```
+
+where you:
+
+* keep the original name and authority,
+* tell the compiler to not worry about replacing the original data,
+* and don't forget to actually lift the original `sendlog_paths.xml` file into your `res/xml` folder.
+
 ## Status
 
 The plugin is in current use in several published Android apps and users regularly and successfully send support requests with it. It isn't tested on iOS thoroughly, although the code is supposedly present. Tests and reports, as well as possible PRs on iOS and other platforms are welcome.

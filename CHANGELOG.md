@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.8] - 2025-02-22
+
+* Remove obsolete v1 embedding.
+
 ## [1.1.7] - 2024-11-27
 
 * Provider id.

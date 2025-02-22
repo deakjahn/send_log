@@ -113,7 +113,7 @@ class SendLogger {
     final zipPath = await getLogPath('log.zip');
     final logFolder = await getLogPath();
     final files = Directory(logFolder) //
-        .listSync(followLinks: false)
+        .listSync(recursive: false, followLinks: false)
         .whereType<File>()
         .where((log) => p.extension(log.path) != '.zip')
         .map((log) => log)
