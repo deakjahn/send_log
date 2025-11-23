@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.9] - 2025-11-23
+
+* Keep log entries before initialization finishes.
+* Dependent version upgrades.
+* New archive dependency.
+
 ## [1.1.8] - 2025-02-22
 
 * Remove obsolete v1 embedding.

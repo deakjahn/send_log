@@ -1,15 +1,17 @@
 library send_log;
 
+import 'dart:async' show StreamSubscription;
 import 'dart:io';
 
+import 'package:archive/archive_io.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_archive/flutter_archive.dart';
 import 'package:logging/logging.dart';
 import 'package:logging_appenders/logging_appenders.dart';
 import 'package:path/path.dart' as p;
 import 'package:send_log/src/file_appender.dart';
+import 'package:send_log/src/startup_buffer.dart';
 
 export 'package:logging/src/level.dart';
 
@@ -22,6 +24,9 @@ class SendLogger {
   final int rotateAtSizeBytes;
   final Duration rotateCheckInterval;
   final bool logFileInDebugMode;
+  late BaseLogAppender appender;
+  final _startup = StartupBuffer();
+  StreamSubscription<LogRecord>? _subStartup;
 
   SendLogger(
     this.appTitle, {
@@ -31,6 +36,7 @@ class SendLogger {
     this.logFileInDebugMode = false,
   }) {
     _logger = Logger(appTitle);
+    _subStartup = Logger.root.onRecord.listen(_startup.add);
     _setup();
   }
 
@@ -46,12 +52,13 @@ class SendLogger {
         useLogFile: true,
         releaseMode: kReleaseMode,
       );
-      SendLogRotatingFileAppender(
+      appender = SendLogRotatingFileAppender(
         baseFilePath: path,
         keepRotateCount: keepRotateCount,
         rotateAtSizeBytes: rotateAtSizeBytes,
         rotateCheckInterval: rotateCheckInterval,
-      ).attachToLogger(Logger.root);
+      )
+        ..attachToLogger(Logger.root);
     } else {
       Logger.root.level = Level.ALL;
       await initialize(
@@ -60,8 +67,15 @@ class SendLogger {
         useLogFile: false,
         releaseMode: kReleaseMode,
       );
-      PrintAppender(formatter: const _SendLogColorFormatter()).attachToLogger(Logger.root);
+      appender = PrintAppender(
+        formatter: const _SendLogColorFormatter(),
+      )
+        ..attachToLogger(Logger.root);
     }
+
+    // ignore: invalid_use_of_protected_member
+    _startup.forwardTo(appender.logListener());
+    _subStartup?.cancel();
   }
 
   static Future<bool> initialize({required String appTitle, required Level level, bool useLogFile = false, bool releaseMode = true}) async {
@@ -112,20 +126,21 @@ class SendLogger {
   static Future<bool> launchEmailLog(String appTitle, String email, String body) async {
     final zipPath = await getLogPath('log.zip');
     final logFolder = await getLogPath();
-    final files = Directory(logFolder) //
-        .listSync(recursive: false, followLinks: false)
-        .whereType<File>()
-        .where((log) => p.extension(log.path) != '.zip')
-        .map((log) => log)
-        .toList();
-
     final zip = File(zipPath);
     if (zip.existsSync()) zip.deleteSync();
-    await ZipFile.createFromFiles(
-      sourceDir: Directory(logFolder),
-      files: files,
-      zipFile: zip,
-    );
+
+    final encoder = ZipFileEncoder()
+      ..create(zipPath);
+    try {
+      final files = Directory(logFolder) //
+          .listSync(recursive: false, followLinks: false)
+          .whereType<File>()
+          .where((log) => p.extension(log.path) != '.zip');
+      for (final file in files)
+        await encoder.addFile(file);
+    } finally {
+      encoder.close();
+    }
 
     return await _sendMail(
       body: body,
@@ -206,7 +221,7 @@ String logHexDump(String prefix, Object? message, List<int> data, {int rowSize =
 class _SendLogColorFormatter extends LogRecordFormatter {
   final LogRecordFormatter wrappedFormatter;
 
-  // ignore: unused_element
+  // ignore: unused_element_parameter
   const _SendLogColorFormatter([this.wrappedFormatter = const DefaultLogRecordFormatter()]);
 
   @override

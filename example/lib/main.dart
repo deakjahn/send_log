@@ -4,7 +4,7 @@ import 'package:send_log/send_log.dart';
 void main() {
   SendLogger(
     MyApp.APP_TITLE,
-    // logFileInDebugMode: true,
+    logFileInDebugMode: true,
   );
   runApp(const MyApp());
 }
@@ -40,6 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
+    logError('test', 'initState early');
     super.initState();
 
     Future.delayed(Duration(seconds: 3)).then((_) {

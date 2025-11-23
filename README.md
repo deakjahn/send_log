@@ -103,7 +103,7 @@ which will call the e-mail app of the user's choice with the subject "Log (YourA
 
 ## Warning on Android
 
-If you plan to use your own file provider inb your app, you have to make sure the two (yours and the one in `send_log`) don't clash. Add this to your manifest:
+If you plan to use your own file provider in your app, you have to make sure the two (yours and the one in `send_log`) don't clash. Add this to your manifest:
 
 ```xml
 <provider
