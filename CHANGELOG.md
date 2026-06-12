@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.0] - 2026-06-12
+
+* Upgrade Gradle.
+
 ## [1.1.9] - 2025-11-23
 
 * Keep log entries before initialization finishes.

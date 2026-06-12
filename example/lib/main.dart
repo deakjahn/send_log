@@ -4,7 +4,7 @@ import 'package:send_log/send_log.dart';
 void main() {
   SendLogger(
     MyApp.APP_TITLE,
-    logFileInDebugMode: true,
+    // logFileInDebugMode: true,
   );
   runApp(const MyApp());
 }

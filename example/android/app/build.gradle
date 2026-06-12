@@ -1,6 +1,5 @@
 plugins {
   id "com.android.application"
-  id "kotlin-android"
   id "dev.flutter.flutter-gradle-plugin"
 }
 
@@ -27,6 +26,12 @@ if (flutterVersionName == null) {
   flutterVersionName = '1.0'
 }
 
+kotlin {
+  compilerOptions {
+    jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+  }
+}
+
 android {
   namespace "hu.co.tramontana.sendlog_example"
   compileSdkVersion flutter.compileSdkVersion
@@ -35,10 +40,6 @@ android {
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_17
     targetCompatibility JavaVersion.VERSION_17
-  }
-
-  kotlinOptions {
-    jvmTarget = 17
   }
 
   sourceSets {

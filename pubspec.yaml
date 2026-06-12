@@ -1,6 +1,6 @@
 name: send_log
 description: Log support with e-mail sending.
-version: 1.1.9
+version: 1.2.0
 homepage: https://github.com/deakjahn/send_log
 
 environment:
@@ -14,7 +14,7 @@ dependencies:
   archive: ^4.0.7
   clock: ^1.1.1
   logging: ^1.2.0
-  logging_appenders: ^1.4.0
+  logging_appenders: ^2.0.0
   path: ^1.8.3
 
 dev_dependencies:

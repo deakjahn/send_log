@@ -227,13 +227,13 @@ class _SendLogColorFormatter extends LogRecordFormatter {
   @override
   StringBuffer formatToStringBuffer(LogRecord rec, StringBuffer sb) {
     if (rec.level <= Level.FINE)
-      sb.write('\x1B[32m');
+      sb.write('\x1B[32m'); // green
     else if (rec.level <= Level.INFO)
-      sb.write('\x1B[34m');
+      sb.write('\x1B[34m'); // blue
     else if (rec.level <= Level.WARNING)
-      sb.write('\x1B[35m');
+      sb.write('\x1B[35m'); // purple
     else if (rec.level <= Level.SEVERE)
-      sb.write('\x1B[31m');
+      sb.write('\x1B[31m'); // red
     else
       sb.write('\x1B[1;31m');
 
