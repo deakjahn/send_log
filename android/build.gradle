@@ -1,22 +1,5 @@
-buildscript {
-  ext.kotlin_version = '2.2.21'
-  repositories {
-    google()
-    mavenCentral()
-  }
-
-  dependencies {
-    classpath 'com.android.tools.build:gradle:9.2.1'
-    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-  }
-}
-
-rootProject.allprojects {
-  repositories {
-    google()
-    mavenCentral()
-  }
-}
+group 'hu.co.tramontana.sendlog'
+version '1.0-SNAPSHOT'
 
 apply plugin: 'com.android.library'
 
@@ -28,13 +11,15 @@ kotlin {
 
 android {
   namespace "hu.co.tramontana.sendlog"
-  compileSdkVersion 34
+  compileSdkVersion flutter.compileSdkVersion
+  ndkVersion flutter.ndkVersion
 
   sourceSets {
     main.java.srcDirs += 'src/main/kotlin'
   }
   defaultConfig {
-    minSdkVersion 16
+    minSdkVersion flutter.minSdkVersion
+    targetSdkVersion flutter.targetSdkVersion
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
   compileOptions {
@@ -47,5 +32,5 @@ android {
 }
 
 dependencies {
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.22"
 }
