@@ -149,7 +149,7 @@ class SendLogger {
       subject: 'Log ($appTitle)',
       recipients: [email],
       attachmentPaths: [zipPath],
-      attachmentMimes: ['applicaion/zip'],
+      attachmentMimes: ['application/zip'],
       isHTML: false,
     );
   }
