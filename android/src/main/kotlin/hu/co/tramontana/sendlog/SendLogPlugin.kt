@@ -88,7 +88,6 @@ class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginReg
   private fun sendEmail(options: MethodCall, callback: Result) {
     val body = options.argument<String>("body")
     val attachmentPaths = options.argument<ArrayList<String>>("attachment_paths") ?: ArrayList()
-    val attachmentMimes = options.argument<ArrayList<String>>("attachment_mimes") ?: ArrayList()
     val subject = options.argument<String>("subject")
     val recipients = options.argument<ArrayList<String>>("recipients")
     val cc = options.argument<ArrayList<String>>("cc")
@@ -110,11 +109,11 @@ class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginReg
       intent.action = Intent.ACTION_SENDTO
       intent.data = Uri.parse("mailto:")
     } else {
-      if (attachmentUris.size == 1 && attachmentMimes.size == 1) {
+      if (attachmentUris.size == 1) {
         // https://github.com/sidlatau/flutter_email_sender/issues/91
         // ACTION_SENDTO here does not work on some devices
         intent.action = Intent.ACTION_SEND
-        intent.type = attachmentMimes.first()
+        intent.data = Uri.parse("mailto:")
         intent.putExtra(Intent.EXTRA_STREAM, attachmentUris.first())
         // Add a selector intent to make sure that only email apps are shown, instead of just any app that can
         // handle the attached file(s). This is done because the intent data is ignored for ACTION_SEND and
@@ -134,7 +133,7 @@ class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginReg
         intent.clipData = clipData
       } else {
         intent.action = Intent.ACTION_SEND_MULTIPLE
-        intent.type = "*/*";
+        intent.type = "text/plain";
         intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(attachmentUris))
       }
       intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
