@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.3] - 2026-10-29
+
+* Provide MIME when sending
+
 ## [1.2.2] - 2026-06-13
 
 * AGP 9, Kotlin DSL.

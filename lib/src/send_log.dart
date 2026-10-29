@@ -109,6 +109,7 @@ class SendLogger {
     List<String> bcc = const [],
     String body = '',
     List<String>? attachmentPaths,
+    List<String>? attachmentMimes,
     bool isHTML = false,
   }) async {
     final result = await _channel.invokeMethod<bool>('sendMail', {
@@ -118,6 +119,7 @@ class SendLogger {
       'cc': cc,
       'bcc': bcc,
       'attachment_paths': attachmentPaths,
+      'attachment_mimes': attachmentMimes,
       'is_html': isHTML,
     });
     return result!;
@@ -147,6 +149,7 @@ class SendLogger {
       subject: 'Log ($appTitle)',
       recipients: [email],
       attachmentPaths: [zipPath],
+      attachmentMimes: ['applicaion/zip'],
       isHTML: false,
     );
   }
