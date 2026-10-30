@@ -107,11 +107,8 @@ If you plan to use your own file provider in your app, you have to make sure the
 
 ```xml
 <provider
-  android:name="hu.co.tramontana.sendlog.SendLogFileProvider"
-  android:authorities="hu.co.tramontana.sendlog.logprovider"
-  android:exported="false"
-  android:grantUriPermissions="true"
-  tools:replace="android:authorities">
+  android:name="hu.co.tramontana.sendlog.SendLogFileProvider" android:authorities="${applicationId}.logprovider"
+  android:exported="false" android:grantUriPermissions="true">
   <meta-data
     android:name="android.support.FILE_PROVIDER_PATHS"
     android:resource="@xml/sendlog_paths"
@@ -121,8 +118,7 @@ If you plan to use your own file provider in your app, you have to make sure the
 
 where you:
 
-* keep the original name and authority,
-* tell the compiler to not worry about replacing the original data,
+* keep the original name but use the authority of the including app,
 * and don't forget to actually lift the original `sendlog_paths.xml` file into your `res/xml` folder.
 
 ## Status

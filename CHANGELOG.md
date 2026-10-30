@@ -1,12 +1,16 @@
 # Changelog
 
+## [1.2.5] - 2026-10-30
+
+* Attachment in Proton Mail.
+
 ## [1.2.4] - 2026-10-29
 
-* Revert
+* Revert.
 
 ## [1.2.3] - 2026-10-29
 
-* Provide MIME when sending
+* Provide MIME when sending.
 
 ## [1.2.2] - 2026-06-13
 

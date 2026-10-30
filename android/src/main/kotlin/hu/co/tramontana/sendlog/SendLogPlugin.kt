@@ -88,6 +88,7 @@ class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginReg
   private fun sendEmail(options: MethodCall, callback: Result) {
     val body = options.argument<String>("body")
     val attachmentPaths = options.argument<ArrayList<String>>("attachment_paths") ?: ArrayList()
+    val attachmentMimes = options.argument<ArrayList<String>>("attachment_mimes") ?: ArrayList()
     val subject = options.argument<String>("subject")
     val recipients = options.argument<ArrayList<String>>("recipients")
     val cc = options.argument<ArrayList<String>>("cc")
@@ -101,7 +102,7 @@ class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginReg
       html = if (isHtml) it else null
     }
     val attachmentUris = attachmentPaths.map {
-      FileProvider.getUriForFile(context, "hu.co.tramontana.sendlog.logprovider", File(it))
+      FileProvider.getUriForFile(activity!!, activity!!.packageName + ".logprovider", File(it))
     }
 
     val intent = Intent()
@@ -109,31 +110,14 @@ class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginReg
       intent.action = Intent.ACTION_SENDTO
       intent.data = Uri.parse("mailto:")
     } else {
-      if (attachmentUris.size == 1) {
-        // https://github.com/sidlatau/flutter_email_sender/issues/91
-        // ACTION_SENDTO here does not work on some devices
+      if (attachmentUris.size == 1 && attachmentMimes.size == 1) {
         intent.action = Intent.ACTION_SEND
-        intent.data = Uri.parse("mailto:")
         intent.putExtra(Intent.EXTRA_STREAM, attachmentUris.first())
-        // Add a selector intent to make sure that only email apps are shown, instead of just any app that can
-        // handle the attached file(s). This is done because the intent data is ignored for ACTION_SEND and
-        // ACTION_SEND_MULTIPLE.
-        // https://stackoverflow.com/questions/2197741/how-to-send-emails-from-my-android-application
         intent.selector = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:"))
-
-        // From the ACTION_SEND_MULTIPLE docs:
-        // "This allows you to use FLAG_GRANT_READ_URI_PERMISSION when sharing content: URIs [...] If you don't set
-        // a ClipData, it will be copied there for you when calling Context#startActivity(Intent)."
-        // However, this doesn't always seem to be happening, so we have to do the dirty work ourselves.
-        val clipItems = attachmentUris.map { ClipData.Item(it) }
-        val clipDescription = ClipDescription("", arrayOf("application/octet-stream"))
-        val clipData = ClipData(clipDescription, clipItems.first())
-        for (item in clipItems.drop(1))
-          clipData.addItem(item)
-        intent.clipData = clipData
+        intent.clipData = ClipData.newRawUri("", attachmentUris.first())
       } else {
         intent.action = Intent.ACTION_SEND_MULTIPLE
-        intent.type = "text/plain";
+        intent.type = "*/*";
         intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(attachmentUris))
       }
       intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -158,10 +142,11 @@ class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginReg
       intent.putExtra(Intent.EXTRA_BCC, listArrayToArray(it))
     }
 
-    if (activity?.packageManager?.resolveActivity(intent, 0) != null)
+    try {
       activity?.startActivityForResult(intent, R.id.request_send_log and 0xFFFF)
-    else
+    } catch (_: Exception) {
       callback.error("email_error", "No email client found", null)
+    }
   }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
