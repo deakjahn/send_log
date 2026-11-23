@@ -13,6 +13,7 @@ class SendLogRotatingFileAppender extends BaseLogAppender {
   final int rotateAtSizeBytes;
   final Duration rotateCheckInterval;
   final Clock clock;
+  Future<void> _pendingWrite = Future.value();
 
   SendLogRotatingFileAppender({
     LogRecordFormatter? formatter,
@@ -44,16 +45,19 @@ class SendLogRotatingFileAppender extends BaseLogAppender {
 
   @override
   void handle(LogRecord record) {
-    try {
-      _outputFile.writeAsStringSync(
-        "${formatter.format(record)}\n",
-        mode: FileMode.append,
-        flush: true,
-      );
-    } catch (error, stackTrace) {
-      print('Error while writing log $error $stackTrace');
-    }
-    _maybeRotate();
+    _pendingWrite = _pendingWrite.then((_) async {
+      try {
+        await _outputFile.writeAsString(
+          '${formatter.format(record)}\n',
+          mode: FileMode.append,
+          flush: true,
+        );
+
+        await _maybeRotate();
+      } catch (error, stackTrace) {
+        print('Error while writing log $error $stackTrace');
+      }
+    });
   }
 
   String _fileNameForRotation(int rotation) => (rotation == 0) ? baseFilePath : '$baseFilePath.$rotation';
@@ -80,7 +84,7 @@ class SendLogRotatingFileAppender extends BaseLogAppender {
 
       for (var i = keepRotateCount - 1; i >= 0; i--) {
         final file = File(_fileNameForRotation(i));
-        if (file.existsSync()) {
+        if (await file.exists()) {
           try {
             await file.rename(_fileNameForRotation(i + 1));
           } on FileSystemException catch (_) {

@@ -107,8 +107,10 @@ If you plan to use your own file provider in your app, you have to make sure the
 
 ```xml
 <provider
-  android:name="hu.co.tramontana.sendlog.SendLogFileProvider" android:authorities="${applicationId}.logprovider"
-  android:exported="false" android:grantUriPermissions="true">
+  android:name="hu.co.tramontana.sendlog.SendLogFileProvider"
+  android:authorities="${applicationId}.logprovider"
+  android:exported="false"
+  android:grantUriPermissions="true">
   <meta-data
     android:name="android.support.FILE_PROVIDER_PATHS"
     android:resource="@xml/sendlog_paths"

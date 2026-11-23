@@ -57,8 +57,7 @@ class SendLogger {
         keepRotateCount: keepRotateCount,
         rotateAtSizeBytes: rotateAtSizeBytes,
         rotateCheckInterval: rotateCheckInterval,
-      )
-        ..attachToLogger(Logger.root);
+      )..attachToLogger(Logger.root);
     } else {
       Logger.root.level = Level.ALL;
       await initialize(
@@ -129,15 +128,16 @@ class SendLogger {
     final zipPath = await getLogPath('log.zip');
     final logFolder = await getLogPath();
     final zip = File(zipPath);
-    if (zip.existsSync()) zip.deleteSync();
+    if (await zip.exists()) await zip.delete();
 
     final encoder = ZipFileEncoder()
       ..create(zipPath);
     try {
-      final files = Directory(logFolder) //
-          .listSync(recursive: false, followLinks: false)
-          .whereType<File>()
-          .where((log) => p.extension(log.path) != '.zip');
+      final files = await Directory(logFolder)
+          .list(recursive: false, followLinks: false) //
+          .where((entry) => entry is File && p.extension(entry.path) != '.zip')
+          .cast<File>()
+          .toList();
       for (final file in files)
         await encoder.addFile(file);
     } finally {

@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.6] - 2026-11-23
+
+* Remove Sync () functions for better resilience.
+
 ## [1.2.5] - 2026-10-30
 
 * Attachment in Proton Mail.
