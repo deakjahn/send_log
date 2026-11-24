@@ -32,9 +32,7 @@ object Log {
   }
 
   fun init(context: Context) {
-    val logFolder = File(context.filesDir, "logs").apply {
-      mkdirs()
-    }
+    val logFolder = File(context.filesDir, "logs").apply { mkdirs() }
     logFile = logFolder.resolve(filename)
   }
 

@@ -76,8 +76,18 @@ class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginReg
       }
 
       "sendMail" -> {
+        if (channelResult != null) {
+          result.error("email_error", "Email request already pending", null)
+          return
+        }
+
         this.channelResult = result
-        sendEmail(call, result)
+        try {
+          sendEmail(call)
+        } catch (e: Exception) {
+          channelResult = null
+          result.error("email_error", e.message, null)
+        }
       }
 
       else ->
@@ -85,7 +95,7 @@ class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginReg
     }
   }
 
-  private fun sendEmail(options: MethodCall, callback: Result) {
+  private fun sendEmail(options: MethodCall) {
     val body = options.argument<String>("body")
     val attachmentPaths = options.argument<ArrayList<String>>("attachment_paths") ?: ArrayList()
     val attachmentMimes = options.argument<ArrayList<String>>("attachment_mimes") ?: ArrayList()
@@ -142,26 +152,17 @@ class SendLogPlugin : FlutterPlugin, MethodCallHandler, ActivityAware, PluginReg
       intent.putExtra(Intent.EXTRA_BCC, listArrayToArray(it))
     }
 
-    try {
-      activity?.startActivityForResult(intent, R.id.request_send_log and 0xFFFF)
-    } catch (_: Exception) {
-      callback.error("email_error", "No email client found", null)
-    }
+    checkNotNull(activity).startActivityForResult(intent, R.id.request_send_log and 0xFFFF)
   }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-    return when (requestCode) {
-      R.id.request_send_log and 0xFFFF -> {
-        channelResult?.success(true)
-        channelResult = null
-        true
-      }
-
-      else -> {
-        channelResult = null
-        false
-      }
-    }
+    if (requestCode == (R.id.request_send_log and 0xFFFF)) {
+      val result = channelResult
+      channelResult = null
+      result?.success(true)
+      return true
+    } else
+      return false
   }
 
   private fun listArrayToArray(list: ArrayList<String>): Array<String> = list.toArray(arrayOfNulls<String>(list.size))

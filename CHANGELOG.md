@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.8] - 2026-11-24
+
+* Prevent repeated activity reply.
+
 ## [1.2.7] - 2026-11-24
 
 * Move file ops to executor for better resilience.
