@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.7] - 2026-11-24
+
+* Move file ops to executor for better resilience.
+
 ## [1.2.6] - 2026-11-23
 
 * Remove Sync () functions for better resilience.

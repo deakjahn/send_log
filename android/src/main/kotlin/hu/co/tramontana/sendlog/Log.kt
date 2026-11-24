@@ -5,6 +5,7 @@ import android.content.*
 import java.io.*
 import java.text.*
 import java.util.*
+import java.util.concurrent.*
 import kotlin.math.*
 import kotlin.text.*
 
@@ -39,12 +40,26 @@ object Log {
 
   private fun timestamp(): String = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSS", Locale.getDefault()).format(Calendar.getInstance().time)
 
+  private val logExecutor = Executors.newSingleThreadExecutor { runnable ->
+    Thread(runnable, TAG)
+  }
+
+  private fun appendLog(text: String) {
+    logExecutor.execute {
+      try {
+        logFile.appendText(text)
+      } catch (e: Exception) {
+        android.util.Log.e(TAG, "Cannot write log", e)
+      }
+    }
+  }
+
   @JvmStatic
   fun info(prefix: String, message: Any?, error: Throwable? = null) {
     if (Level.FINEST.value > level) {
       if (useLogFile) {
         val details = if (!releaseMode && error != null) error.stackTraceToString() else ""
-        logFile.appendText("${timestamp()} FINEST $TAG - $prefix: $message\n$details")
+        appendLog("${timestamp()} FINEST $TAG - $prefix: $message\n$details")
       } else
         android.util.Log.i(
           TAG,
@@ -59,7 +74,7 @@ object Log {
     if (Level.FINE.value > level) {
       if (useLogFile) {
         val details = if (!releaseMode && error != null) error.stackTraceToString() else ""
-        logFile.appendText("${timestamp()} FINE $TAG - $prefix: $message\n$details")
+        appendLog("${timestamp()} FINE $TAG - $prefix: $message\n$details")
       } else
         android.util.Log.d(
           TAG,
@@ -74,7 +89,7 @@ object Log {
     if (Level.WARNING.value > level) {
       if (useLogFile) {
         val details = if (!releaseMode && error != null) error.stackTraceToString() else ""
-        logFile.appendText("${timestamp()} WARNING $TAG - $prefix: $message\n$details")
+        appendLog("${timestamp()} WARNING $TAG - $prefix: $message\n$details")
       } else
         android.util.Log.w(
           TAG,
@@ -89,7 +104,7 @@ object Log {
     if (Level.SEVERE.value > level) {
       if (useLogFile) {
         val details = if (!releaseMode && error != null) error.stackTraceToString() else ""
-        logFile.appendText("${timestamp()} SEVERE $TAG - $prefix: $message\n$details")
+        appendLog("${timestamp()} SEVERE $TAG - $prefix: $message\n$details")
       } else
         android.util.Log.e(
           TAG,
